@@ -1,0 +1,10 @@
+# Cron fallback for orchestration jobs inside Docker container
+# Use with: crond -f -l 8
+10 1 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner daily_risk_consolidation
+20 1 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner daily_yield_calculation
+30 1 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner credit_score_refresh
+40 1 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner liceu_project_sync
+50 1 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner liquidity_check
+0 2 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner investor_notifications
+30 2 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner esg_score_update
+0 3 * * * cd /app/backend && python -m app.modules.orchestration.cron_runner audit_snapshot

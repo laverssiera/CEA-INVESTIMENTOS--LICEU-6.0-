@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="260" viewBox="0 0 1160 260" role="img" aria-label="Liceu 6.0 | CEA Investimentos">
+  <defs>
+    <linearGradient id="b" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d3c8f"/>
+      <stop offset="1" stop-color="#1f66dc"/>
+    </linearGradient>
+    <linearGradient id="r" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e11d2a"/>
+      <stop offset="1" stop-color="#b10f1a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1160" height="260" fill="none"/>
+
+  <g transform="translate(18,34)">
+    <path d="M0,18 l30,-10 l0,26 l-14,6 l14,6 l0,26 l-30,-10 z" fill="url(#r)"/>
+    <path d="M50,0 l140,34 l0,50 l-140,34 z" fill="url(#b)"/>
+    <path d="M50,90 l140,0 l0,22 l-140,34 z" fill="#0b3a86"/>
+  </g>
+
+  <text x="220" y="110" font-family="Manrope, Arial, sans-serif" font-size="84" font-weight="800" fill="#0d3c8f">Liceu</text>
+  <text x="454" y="110" font-family="Manrope, Arial, sans-serif" font-size="84" font-weight="900" fill="#e11d2a">6.0</text>
+  <text x="220" y="150" font-family="Manrope, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="2" fill="#5b6470">INTELLIGENT CONSTRUCTION ECOSYSTEM</text>
+  <text x="230" y="198" font-family="Manrope, Arial, sans-serif" font-size="32" font-weight="700" letter-spacing="5" fill="#1d3f7e">CONSTRUA  •  INVISTA  •  COMPRE</text>
+
+  <line x1="670" y1="28" x2="670" y2="206" stroke="#8a94a7" stroke-width="3"/>
+
+  <g transform="translate(698,40)">
+    <circle cx="58" cy="58" r="56" fill="none" stroke="#0a2f6a" stroke-width="18"/>
+    <path d="M12,92 A62,62 0 0 0 106,96" fill="none" stroke="#d1121f" stroke-width="14"/>
+    <rect x="38" y="54" width="12" height="30" fill="url(#b)"/>
+    <rect x="54" y="44" width="12" height="40" fill="url(#b)"/>
+    <rect x="70" y="32" width="12" height="52" fill="url(#b)"/>
+  </g>
+
+  <text x="810" y="120" font-family="Sora, Arial, sans-serif" font-size="98" font-weight="800" fill="#0a2f6a">CEA</text>
+  <text x="812" y="164" font-family="Manrope, Arial, sans-serif" font-size="46" font-weight="800" letter-spacing="6" fill="#b0131d">INVESTIMENTOS</text>
+  <text x="820" y="202" font-family="Manrope, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="3" fill="#202938">CONECTA  •  CAPITAL  •  REALIZA</text>
+</svg>
