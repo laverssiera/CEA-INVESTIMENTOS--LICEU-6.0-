@@ -1,8 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import List, Optional
 from pydantic import BaseModel, Field
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 class EntryType(str, Enum):
     DEBIT = "DEBIT"
@@ -13,13 +17,13 @@ class LedgerEntry(BaseModel):
     amount: Decimal
     entry_type: EntryType
     description: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    metadata: dict = {}
+    timestamp: datetime = Field(default_factory=utc_now)
+    metadata: dict = Field(default_factory=dict)
 
 class Transaction(BaseModel):
     transaction_id: str
     entries: List[LedgerEntry]
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=utc_now)
 
 class FinanceOSLedger:
     """

@@ -92,3 +92,9 @@ def test_global_portfolio_state_and_runtime_metrics() -> None:
     active = investments_state.json().get("active_runtimes", [])
     assert "global_portfolio_runtime" in active
     assert metrics.get("total_global_portfolios_managed", 0) >= 1
+
+
+def test_global_portfolio_not_found_returns_404() -> None:
+    response = client.get("/investments/portfolio/global/non-existent-id")
+    assert response.status_code == 404
+    assert response.json().get("detail") == "Portfolio not found"

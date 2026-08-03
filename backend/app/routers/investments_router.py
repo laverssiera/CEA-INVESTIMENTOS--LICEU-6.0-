@@ -128,7 +128,10 @@ async def global_portfolio_state(portfolio_id: str):
     """
     Retorna o estado de um portfólio global por ID.
     """
-    return await global_portfolio_runtime.get_portfolio_state(portfolio_id)
+    result = await global_portfolio_runtime.get_portfolio_state(portfolio_id)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
 
 @router.post("/fund/simulate")
 async def fund_simulate(request: FundSimulateRequest):

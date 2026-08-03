@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/john/cea", tags=["John CEA"])
 
@@ -11,7 +11,7 @@ async def john_cea_health():
         "john": "cea",
         "status": "online",
         "module": "finance",
-        "timestamp": datetime.utcnow()
+        "timestamp": datetime.now(timezone.utc)
     }
 
 
@@ -64,5 +64,5 @@ async def john_cea_sync(payload: Dict[str, Any]):
         "john": "cea",
         "sync": True,
         "source": payload.get("source"),
-        "timestamp": datetime.utcnow()
+        "timestamp": datetime.now(timezone.utc)
     }
