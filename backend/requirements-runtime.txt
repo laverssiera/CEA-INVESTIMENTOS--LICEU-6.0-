@@ -1,0 +1,14 @@
+nats-py
+neo4j
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+prometheus-client
+networkx
+numpy
+pandas
+scipy
+redis
+httpx
+pydantic
+uvloop

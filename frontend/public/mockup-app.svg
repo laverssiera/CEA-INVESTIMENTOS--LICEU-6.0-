@@ -1,0 +1,34 @@
+<svg width="340" height="660" viewBox="0 0 340 660" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="42" y="10" width="256" height="640" rx="38" fill="#0D2B52"/>
+  <rect x="52" y="20" width="236" height="620" rx="30" fill="#F7FAFF"/>
+  <rect x="130" y="34" width="78" height="8" rx="4" fill="#C8A96A"/>
+
+  <rect x="68" y="62" width="204" height="94" rx="18" fill="#14427A"/>
+  <text x="86" y="88" fill="#EAF1FA" font-family="Arial, sans-serif" font-size="12">Saldo investido</text>
+  <text x="86" y="118" fill="white" font-family="Arial, sans-serif" font-size="22" font-weight="700">R$ 286.000</text>
+  <text x="86" y="140" fill="#C8D8EF" font-family="Arial, sans-serif" font-size="11">Rendimento mensal: +1,18%</text>
+
+  <rect x="68" y="172" width="96" height="82" rx="14" fill="#FFFFFF" stroke="#D7DDE7"/>
+  <text x="80" y="194" fill="#0D2B52" font-family="Arial, sans-serif" font-size="11" font-weight="700">Investir</text>
+  <text x="80" y="216" fill="#6C7685" font-family="Arial, sans-serif" font-size="10">Produtos</text>
+
+  <rect x="176" y="172" width="96" height="82" rx="14" fill="#FFFFFF" stroke="#D7DDE7"/>
+  <text x="188" y="194" fill="#0D2B52" font-family="Arial, sans-serif" font-size="11" font-weight="700">Projetos</text>
+  <text x="188" y="216" fill="#6C7685" font-family="Arial, sans-serif" font-size="10">LICEU ao vivo</text>
+
+  <rect x="68" y="266" width="204" height="120" rx="16" fill="#FFFFFF" stroke="#D7DDE7"/>
+  <text x="84" y="292" fill="#0D2B52" font-family="Arial, sans-serif" font-size="12" font-weight="700">Carteira</text>
+  <circle cx="115" cy="340" r="26" fill="#C8A96A"/>
+  <circle cx="153" cy="340" r="26" fill="#1F3B63"/>
+  <circle cx="191" cy="340" r="26" fill="#8AA8CF"/>
+  <text x="84" y="372" fill="#6C7685" font-family="Arial, sans-serif" font-size="10">Alocacao e historico de rendimento</text>
+
+  <rect x="68" y="398" width="204" height="88" rx="16" fill="#FFFFFF" stroke="#D7DDE7"/>
+  <text x="84" y="422" fill="#0D2B52" font-family="Arial, sans-serif" font-size="12" font-weight="700">Alertas</text>
+  <text x="84" y="444" fill="#6C7685" font-family="Arial, sans-serif" font-size="10">Concentracao SP: 28%</text>
+  <text x="84" y="462" fill="#6C7685" font-family="Arial, sans-serif" font-size="10">Funding curto prazo: atencao</text>
+
+  <rect x="68" y="510" width="204" height="98" rx="16" fill="#0D2B52"/>
+  <text x="86" y="534" fill="#C8D8EF" font-family="Arial, sans-serif" font-size="11">Bottom Navigation</text>
+  <text x="86" y="560" fill="white" font-family="Arial, sans-serif" font-size="10">Home | Investir | Projetos | Carteira | Perfil</text>
+</svg>
