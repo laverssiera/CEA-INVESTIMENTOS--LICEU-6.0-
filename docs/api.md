@@ -35,6 +35,21 @@ Regra:
 - GET /api/investments/positions
 - GET /api/rules/allocation/{product_id}
 
+### Onda 10 — Capital Global
+
+- POST /investments/civilization/portfolio/create
+- GET /investments/civilization/portfolio/state
+- GET /investments/civilization/portfolio/{portfolio_id}
+- POST /investments/civilization/risk/score
+- POST /investments/civilization/capital/suggest?total_capital={value}&risk_profile={profile}
+- POST /investments/civilization/investment/analyze?region={region}&investment_type={type}&amount={value}
+
+Fluxo:
+- portfolio: cria e consulta portfólios globais multi-região
+- risk: calcula score de risco para projetos civilizacionais
+- capital: sugere alocação de capital por perfil de risco
+- investment: analisa oportunidade soberana de investimento
+
 ## Crédito / Financiamento
 
 - POST /api/financing/request

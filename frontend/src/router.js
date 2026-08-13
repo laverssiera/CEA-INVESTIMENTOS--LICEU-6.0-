@@ -25,6 +25,7 @@ import InvestorProjectsView from './views/InvestorProjectsView.vue'
 import LoginView from './views/LoginView.vue'
 import MarketIntelligenceView from './views/MarketIntelligenceView.vue'
 import DashboardView from './views/DashboardView.vue'
+import ContinentalDashboardView from './views/ContinentalDashboardView.vue'
 import FinancingView from './views/FinancingView.vue'
 import InstitutionalView from './views/InstitutionalView.vue'
 import InstitutionalPolicyView from './views/InstitutionalPolicyView.vue'
@@ -97,6 +98,12 @@ const router = createRouter({
       component: DashboardView,
       alias: ['/cea/dashboard'],
       meta: { requiresAuth: true, roles: INVESTOR_ROLES },
+    },
+    {
+      path: '/continental/dashboard',
+      name: 'continental-dashboard',
+      component: ContinentalDashboardView,
+      meta: { requiresAuth: false },
     },
     {
       path: '/investidor/carteira',

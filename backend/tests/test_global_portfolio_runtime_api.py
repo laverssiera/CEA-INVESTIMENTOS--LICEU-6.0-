@@ -94,6 +94,126 @@ def test_global_portfolio_state_and_runtime_metrics() -> None:
     assert metrics.get("total_global_portfolios_managed", 0) >= 1
 
 
+def test_global_portfolio_monitoring_exposes_segments() -> None:
+    create = client.post(
+        "/investments/portfolio/global/create",
+        json={
+            "owner_id": "owner-monitor-1",
+            "region": "Global-Markets",
+            "assets": [
+                {"asset_id": "MKT-001", "value": 250000, "segment": "mercados", "country": "US"},
+                {"asset_id": "GOV-001", "value": 175000, "segment": "governos", "country": "BR"},
+                {"asset_id": "INF-001", "value": 325000, "segment": "infraestrutura", "country": "CL"},
+                {"asset_id": "FND-001", "value": 150000, "segment": "fundos", "country": "LU"},
+            ],
+        },
+    )
+    assert create.status_code == 200
+
+    response = client.get("/investments/portfolio/global/monitor")
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["status"] == "operational"
+    assert body["global_portfolios"] >= 1
+    assert body["segments"]["markets"] == {"assets": 1, "total_value": 250000.0}
+    assert body["segments"]["governments"] == {"assets": 1, "total_value": 175000.0}
+    assert body["segments"]["infrastructure"] == {"assets": 1, "total_value": 325000.0}
+    assert body["segments"]["funds"] == {"assets": 1, "total_value": 150000.0}
+    assert body["countries"]["US"] == 250000.0
+    assert body["countries"]["BR"] == 175000.0
+    assert body["countries"]["CL"] == 325000.0
+    assert body["countries"]["LU"] == 150000.0
+
+
+def test_global_portfolio_monitoring_supports_filters() -> None:
+    create = client.post(
+        "/investments/portfolio/global/create",
+        json={
+            "owner_id": "owner-filter-1",
+            "region": "LatAm",
+            "assets": [
+                {"asset_id": "LATAM-INF-1", "value": 125000, "segment": "infraestrutura", "country": "BR"},
+                {"asset_id": "LATAM-MKT-1", "value": 50000, "segment": "mercados", "country": "BR"},
+            ],
+        },
+    )
+    assert create.status_code == 200
+
+    create = client.post(
+        "/investments/portfolio/global/create",
+        json={
+            "owner_id": "owner-filter-2",
+            "region": "Europa",
+            "assets": [
+                {"asset_id": "EU-FUND-1", "value": 90000, "segment": "fundos", "country": "LU"},
+                {"asset_id": "EU-GOV-1", "value": 110000, "segment": "governos", "country": "DE"},
+            ],
+        },
+    )
+    assert create.status_code == 200
+
+    response = client.get(
+        "/investments/portfolio/global/monitor",
+        params={"region": "LatAm", "country": "BR", "owner_id": "owner-filter-1"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["filters"] == {
+        "region": "LatAm",
+        "country": "BR",
+        "owner_id": "owner-filter-1",
+        "segment": None,
+        "min_value": None,
+        "max_value": None,
+    }
+    assert body["global_portfolios"] == 1
+    assert body["segments"]["infrastructure"] == {"assets": 1, "total_value": 125000.0}
+    assert body["segments"]["markets"] == {"assets": 1, "total_value": 50000.0}
+    assert body["segments"]["governments"] == {"assets": 0, "total_value": 0.0}
+    assert body["segments"]["funds"] == {"assets": 0, "total_value": 0.0}
+    assert body["countries"] == {"BR": 175000.0}
+
+
+def test_global_portfolio_monitoring_supports_segment_and_value_filters() -> None:
+    create = client.post(
+        "/investments/portfolio/global/create",
+        json={
+            "owner_id": "owner-segment-1",
+            "region": "Global",
+            "assets": [
+                {"asset_id": "MKT-LOW", "value": 40000, "segment": "mercados", "country": "US"},
+                {"asset_id": "MKT-HIGH", "value": 180000, "segment": "mercados", "country": "US"},
+                {"asset_id": "FND-HIGH", "value": 220000, "segment": "fundos", "country": "LU"},
+            ],
+        },
+    )
+    assert create.status_code == 200
+
+    response = client.get(
+        "/investments/portfolio/global/monitor",
+        params={"segment": "mercados", "min_value": 100000, "max_value": 200000},
+    )
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["filters"] == {
+        "region": None,
+        "country": None,
+        "owner_id": None,
+        "segment": "mercados",
+        "min_value": 100000.0,
+        "max_value": 200000.0,
+    }
+    assert body["global_portfolios"] >= 1
+    assert body["segments"]["markets"] == {"assets": 1, "total_value": 180000.0}
+    assert body["segments"]["governments"] == {"assets": 0, "total_value": 0.0}
+    assert body["segments"]["infrastructure"] == {"assets": 0, "total_value": 0.0}
+    assert body["segments"]["funds"] == {"assets": 0, "total_value": 0.0}
+    assert body["countries"] == {"US": 180000.0}
+
+
 def test_global_portfolio_not_found_returns_404() -> None:
     response = client.get("/investments/portfolio/global/non-existent-id")
     assert response.status_code == 404

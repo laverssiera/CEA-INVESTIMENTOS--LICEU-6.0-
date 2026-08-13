@@ -45,6 +45,20 @@
     <!-- Download do App -->
     <AppDownloadSection />
 
+    <section class="cea-continental-highlight">
+      <div class="cea-continental-highlight__copy">
+        <p class="eyebrow">Capa operacional · Continental</p>
+        <h3>JOHN decide. ECONOTECH mede o impacto. CEA aloca. LICEU governa.</h3>
+        <p>
+          Acesse o painel continental para acompanhar decisão estratégica, alocação de capital,
+          impacto financeiro e governança em uma visão única do investimento global.
+        </p>
+      </div>
+      <RouterLink class="primary-btn cea-continental-highlight__cta" to="/continental/dashboard">
+        Abrir painel continental
+      </RouterLink>
+    </section>
+
     <MissionVisionValues />
 
     <!-- Botões principais CTA -->
@@ -60,6 +74,11 @@
           <span class="cea-cta-icon">🏗️</span>
           <strong>Solicitar financiamento</strong>
           <p>Financie sua obra com crédito estruturado e aprovação ágil.</p>
+        </RouterLink>
+        <RouterLink class="cea-cta-card cea-cta-card--continental" to="/continental/dashboard">
+          <span class="cea-cta-icon">🌍</span>
+          <strong>Painel Continental</strong>
+          <p>Decisão estratégica, impacto econômico, alocação e governança em um único dashboard.</p>
         </RouterLink>
         <RouterLink class="cea-cta-card" to="/servicos">
           <span class="cea-cta-icon">🏦</span>
@@ -361,6 +380,45 @@ const financingJourney = [
   font-size: 0.9rem;
 }
 
+.cea-cta-card--continental {
+  background: linear-gradient(135deg, rgba(13, 71, 161, 0.06), rgba(15, 118, 110, 0.08));
+  border-color: rgba(14, 116, 144, 0.35);
+}
+
+.cea-continental-highlight {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 26px 28px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(15, 23, 42, 0.04));
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+.cea-continental-highlight__copy {
+  max-width: 760px;
+}
+
+.cea-continental-highlight__copy h3 {
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 2vw, 2.2rem);
+  color: var(--deep);
+}
+
+.cea-continental-highlight__copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.cea-continental-highlight__cta {
+  white-space: nowrap;
+}
+
 /* Services */
 .cea-service-card {
   display: flex;
@@ -583,6 +641,16 @@ const financingJourney = [
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .cea-continental-highlight {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cea-continental-highlight__cta {
+    width: 100%;
+    justify-content: center;
+  }
+
   .cea-cta-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -595,6 +663,10 @@ const financingJourney = [
 @media (max-width: 600px) {
   .cea-hero {
     padding: 28px 20px;
+  }
+
+  .cea-continental-highlight {
+    padding: 20px 18px;
   }
 
   .cea-cta-grid {

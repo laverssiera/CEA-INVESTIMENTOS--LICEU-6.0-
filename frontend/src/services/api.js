@@ -15,3 +15,5 @@ api.interceptors.request.use((config) => {
 })
 
 export default api
+
+export const fetchEarthProjectExamples = async () => (await api.get('/investments/earth/projects/examples')).data

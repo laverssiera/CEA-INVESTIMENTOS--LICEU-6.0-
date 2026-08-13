@@ -13,6 +13,7 @@
         <RouterLink to="/interplanetary/ecossistema" @click="menuOpen = false">Interplanetary</RouterLink>
         <RouterLink to="/investir" @click="menuOpen = false">Investir</RouterLink>
         <RouterLink to="/financiamento" @click="menuOpen = false">Financiamento</RouterLink>
+        <RouterLink to="/continental/dashboard" @click="menuOpen = false">Continental</RouterLink>
         <RouterLink to="/servicos" @click="menuOpen = false">Serviços</RouterLink>
         <RouterLink to="/esg" @click="menuOpen = false">ESG</RouterLink>
         <RouterLink to="/cliente/dashboard" @click="menuOpen = false">Área cliente</RouterLink>
@@ -48,6 +49,7 @@
         <div class="cea-footer-links-row">
           <RouterLink to="/institucional">Institucional</RouterLink>
           <RouterLink to="/interplanetary/ecossistema">Interplanetary</RouterLink>
+          <RouterLink to="/continental/dashboard">Continental</RouterLink>
           <RouterLink to="/servicos">Serviços</RouterLink>
           <RouterLink to="/investir">Investir</RouterLink>
           <RouterLink to="/financiamento">Financiamento</RouterLink>

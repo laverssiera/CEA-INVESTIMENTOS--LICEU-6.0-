@@ -1,0 +1,87 @@
+{
+  "overview": {
+    "status": "approved",
+    "decision_owner": "John",
+    "governance": "LICEU",
+    "region": "Continental",
+    "summary": "JOHN decide, ECONOTECH calcula o impacto, CEA aloca capital e LICEU governa."
+  },
+  "kpis": {
+    "decision_score": 0.81,
+    "risk_score": 0.62,
+    "roi": 1.42,
+    "npv": 13234443.42,
+    "total_capital": 100000000,
+    "total_initial_value": 100000000
+  },
+  "decision": {
+    "decision": "approve",
+    "decision_owner": "John",
+    "governance": "LICEU",
+    "decision_score": 0.81,
+    "summary": "JOHN decide pela aprovação, revisão ou deferimento com governança LICEU."
+  },
+  "allocation": {
+    "total_capital": 100000000,
+    "risk_profile": "Moderate",
+    "region": "Continental",
+    "decision_owner": "CEA",
+    "governance": "LICEU",
+    "allocations": [
+      {"category": "Fixed Income", "percentage": 0.5, "amount": 50000000.0},
+      {"category": "Infrastructure", "percentage": 0.3, "amount": 30000000.0},
+      {"category": "Alternative", "percentage": 0.2, "amount": 20000000.0}
+    ]
+  },
+  "portfolio": {
+    "portfolio_id": "ceda1b25-9f0d-4bc6-9d0f-9c3f6c936e7e",
+    "owner_id": "cea-continental-01",
+    "region": "Continental",
+    "status": "active",
+    "decision_owner": "CEA",
+    "governance": "LICEU",
+    "total_initial_value": 100000000.0,
+    "assets": [
+      {"asset_id": "C-PORT-001", "value": 32000000, "segment": "infraestrutura", "country": "BR"},
+      {"asset_id": "C-PORT-002", "value": 24000000, "segment": "mercados", "country": "CL"},
+      {"asset_id": "C-PORT-003", "value": 18000000, "segment": "fundos", "country": "AR"},
+      {"asset_id": "C-PORT-004", "value": 26000000, "segment": "governos", "country": "PE"}
+    ],
+    "by_country": {
+      "BR": 32000000,
+      "CL": 24000000,
+      "AR": 18000000,
+      "PE": 26000000
+    }
+  },
+  "finance": {
+    "npv": 13234443.42,
+    "irr": 0.2474,
+    "payback_period": 3,
+    "total_return": 121000000.0,
+    "roi": 1.42,
+    "owner": "ECONOTECH",
+    "governance": "LICEU",
+    "decision_owner": "John"
+  },
+  "risk": {
+    "score": 0.62,
+    "classification": "Medium",
+    "confidence_interval": [0.57, 0.67],
+    "decision_owner": "John",
+    "governance": "LICEU"
+  },
+  "chart_data": {
+    "allocation_by_category": [
+      {"category": "Fixed Income", "value": 50},
+      {"category": "Infrastructure", "value": 30},
+      {"category": "Alternative", "value": 20}
+    ],
+    "portfolio_by_country": [
+      {"country": "BR", "value": 32000000},
+      {"country": "CL", "value": 24000000},
+      {"country": "AR", "value": 18000000},
+      {"country": "PE", "value": 26000000}
+    ]
+  }
+}
