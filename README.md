@@ -97,6 +97,66 @@ O CEA Investimentos é regido pela transparência total e imutabilidade. Toda de
 4. Execute as migrações: `alembic upgrade head`
 5. Inicie o servidor: `uvicorn backend.app.main:app --reload`
 
+## Endpoint de avaliação de investimento civilizacional
+
+O runtime de investimento civilizacional expõe a rota `POST /investments/civilization/project/score` para calcular risco, fluxo de caixa, NPV, IRR, payback e decisão de investimento.
+
+### Payload aceito
+
+O endpoint aceita o formato padrão do projeto e também aliases mais amigáveis ao frontend:
+
+```json
+{
+  "project_name": "Ferrovia Norte",
+  "location": "São Paulo",
+  "project_type": "ferrovia",
+  "capital_expenditure": 100000000,
+  "annual_opex": 5000000,
+  "annual_revenue": 18000000,
+  "strategic_importance": 0.8,
+  "discount": 0.08,
+  "years": 10
+}
+```
+
+Aliases equivalentes:
+- `project_name` → `name`
+- `capital_expenditure` ou `capex` → `capex`
+- `annual_opex` → `opex_yearly`
+- `annual_revenue` ou `revenue` → `annual_revenue`
+- `discount` → `discount_rate`
+- `years` → `horizon_years`
+
+### Resposta esperada
+
+A API retorna:
+- `decision`
+- `flow.risk`
+- `flow.cash_flow`
+- `flow.metrics.npv`
+- `flow.metrics.irr`
+- `flow.metrics.payback`
+- `flow.metrics.roi`
+- `flow.impacto_estrategico`
+
+### Exemplo de chamada
+
+```bash
+curl -X POST "http://localhost:8000/investments/civilization/project/score" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_name": "Ferrovia Norte",
+    "location": "São Paulo",
+    "project_type": "ferrovia",
+    "capital_expenditure": 100000000,
+    "annual_opex": 5000000,
+    "annual_revenue": 18000000,
+    "strategic_importance": 0.8,
+    "discount": 0.08,
+    "years": 10
+  }'
+```
+
 ## Governança e Compliance
 
 O projeto segue rigorosos padrões de segurança e governança, detalhados em [docs/governance/governance.md](docs/governance/governance.md), incluindo:
