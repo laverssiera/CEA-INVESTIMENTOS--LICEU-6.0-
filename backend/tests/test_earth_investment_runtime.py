@@ -57,6 +57,33 @@ def test_civilization_project_score_api_returns_financial_contract() -> None:
     assert body["flow"]["metrics"]["roi"] is not None
 
 
+def test_project_score_links_financial_exposure_chain_to_trace_id() -> None:
+    trace_id = "trace-financial-exposure-001"
+    response = client.post(
+        "/investments/project/score",
+        json={
+            "name": "Porto Norte",
+            "project_type": "porto",
+            "capex": 100_000_000,
+            "opex_yearly": 5_000_000,
+            "annual_revenue": 18_000_000,
+            "trace_id": trace_id,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["trace_id"] == trace_id
+    assert body["flow"]["trace_id"] == trace_id
+    assert body["analysis"]["trace_id"] == trace_id
+    assert body["flow"]["risk"] == body["analysis"]["risk"]
+    assert body["flow"]["cash_flow"] == body["analysis"]["cash_flow"]
+    assert body["flow"]["metrics"]["npv"] == body["analysis"]["npv"]
+    assert body["flow"]["metrics"]["irr"] == body["analysis"]["irr"]
+    assert body["flow"]["metrics"]["payback"] == body["analysis"]["payback"]
+    assert body["flow"]["financial_exposure"] == body["analysis"]["financial_exposure"]
+
+
 def test_civilization_project_score_api_accepts_frontend_aliases() -> None:
     response = client.post(
         "/investments/civilization/project/score",

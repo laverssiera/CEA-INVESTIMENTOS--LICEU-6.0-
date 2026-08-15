@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, ConfigDict
+from uuid import uuid4
 
 from app.events import event_bus
 from app.db.session import get_db
@@ -43,6 +44,7 @@ class ProjectScoreRequest(BaseModel):
     discount_rate: Optional[float] = 0.1
     horizon_years: Optional[int] = 10
     physical_event: Optional[Dict[str, Any]] = None
+    trace_id: Optional[str] = None
 
 class PortfolioCreateRequest(BaseModel):
     owner_id: str
@@ -92,8 +94,11 @@ async def project_score(request: ProjectScoreRequest):
     risco -> CAPEX -> OPEX -> cash flow -> NPV -> IRR -> payback -> ROI -> impacto estrategico
     """
     analysis = earth_project_score_runtime.score_project(request.model_dump())
+    trace_id = request.trace_id or str(uuid4())
+    analysis["trace_id"] = trace_id
 
     return {
+        "trace_id": trace_id,
         "project": {
             "name": request.name,
             "location": request.location,
@@ -102,6 +107,7 @@ async def project_score(request: ProjectScoreRequest):
         },
         "decision": analysis["decision"],
         "flow": {
+            "trace_id": trace_id,
             "base": {
                 "name": request.name,
                 "location": request.location,
@@ -132,7 +138,9 @@ async def earth_project_score(request: ProjectScoreRequest):
     """
     Score completo para decisao de capital em um projeto terrestre.
     """
-    return earth_project_score_runtime.score_project(request.model_dump())
+    analysis = earth_project_score_runtime.score_project(request.model_dump())
+    analysis["trace_id"] = request.trace_id or str(uuid4())
+    return analysis
 
 
 @router.post("/civilization/project/score")
@@ -141,6 +149,7 @@ async def civilization_project_score(request: Dict[str, Any] = Body(...)):
     Score completo para decisao de capital em um projeto de infraestrutura soberana/ondas.
     """
     payload = dict(request or {})
+    trace_id = str(payload.get("trace_id") or uuid4())
     normalized_name = payload.get("name") or payload.get("project_name") or "project"
     budget_value = (
         payload.get("budget")
@@ -171,8 +180,10 @@ async def civilization_project_score(request: Dict[str, Any] = Body(...)):
         horizon_years=int(horizon_value),
         physical_event=payload.get("physical_event"),
     )
+    analysis["trace_id"] = trace_id
 
     return {
+        "trace_id": trace_id,
         "project": {
             "name": normalized_name,
             "location": payload.get("location"),
@@ -181,6 +192,7 @@ async def civilization_project_score(request: Dict[str, Any] = Body(...)):
         },
         "decision": analysis["decision"],
         "flow": {
+            "trace_id": trace_id,
             "base": {
                 "name": normalized_name,
                 "location": payload.get("location"),
