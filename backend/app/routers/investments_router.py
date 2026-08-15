@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from uuid import uuid4
 
 from app.events import event_bus
 from app.db.session import get_db
@@ -15,6 +16,7 @@ from app.runtime.investments.earth_portfolio_runtime import EarthPortfolioRuntim
 from app.runtime.investments.earth_project_score_runtime import EarthProjectScoreRuntime
 from app.runtime.investments.sovereign_investment_runtime import SovereignInvestmentRuntime
 from app.runtime.investments.global_portfolio_runtime import GlobalPortfolioRuntime
+from app.runtime.investments.civilization_investment_runtime import CivilizationInvestmentRuntime
 from app.runtime.investments.civilization_project_finance_runtime import CivilizationProjectFinanceRuntime
 from app.runtime.investments.continental_investment_runtime import ContinentalInvestmentRuntime
 from app.runtime.investments.continental_capital_allocation_runtime import ContinentalCapitalAllocationRuntime
@@ -27,10 +29,12 @@ router = APIRouter(prefix="/investments", tags=["Investments - CEA Layer"])
 # --- Schemas ---
 
 class ProjectScoreRequest(BaseModel):
-    name: str
-    location: str
-    complexity: int
-    budget: float
+    model_config = ConfigDict(extra="ignore")
+
+    name: Optional[str] = None
+    location: Optional[str] = None
+    complexity: Optional[int] = 3
+    budget: Optional[float] = None
     project_type: Optional[str] = None
     capex: Optional[float] = None
     opex_yearly: Optional[float] = None
@@ -40,6 +44,7 @@ class ProjectScoreRequest(BaseModel):
     discount_rate: Optional[float] = 0.1
     horizon_years: Optional[int] = 10
     physical_event: Optional[Dict[str, Any]] = None
+    trace_id: Optional[str] = None
 
 class PortfolioCreateRequest(BaseModel):
     owner_id: str
@@ -66,6 +71,7 @@ risk_runtime = RiskScoringRuntime()
 portfolio_runtime = PortfolioRuntime()
 fund_runtime = InfrastructureFundRuntime()
 financing_runtime = ProjectFinancingRuntime()
+civilization_investment_runtime = CivilizationInvestmentRuntime()
 civilization_project_finance_runtime = CivilizationProjectFinanceRuntime()
 allocation_runtime = CapitalAllocationRuntime()
 sovereign_runtime = SovereignInvestmentRuntime()
@@ -88,8 +94,11 @@ async def project_score(request: ProjectScoreRequest):
     risco -> CAPEX -> OPEX -> cash flow -> NPV -> IRR -> payback -> ROI -> impacto estrategico
     """
     analysis = earth_project_score_runtime.score_project(request.model_dump())
+    trace_id = request.trace_id or str(uuid4())
+    analysis["trace_id"] = trace_id
 
     return {
+        "trace_id": trace_id,
         "project": {
             "name": request.name,
             "location": request.location,
@@ -98,6 +107,7 @@ async def project_score(request: ProjectScoreRequest):
         },
         "decision": analysis["decision"],
         "flow": {
+            "trace_id": trace_id,
             "base": {
                 "name": request.name,
                 "location": request.location,
@@ -128,7 +138,84 @@ async def earth_project_score(request: ProjectScoreRequest):
     """
     Score completo para decisao de capital em um projeto terrestre.
     """
-    return earth_project_score_runtime.score_project(request.model_dump())
+    analysis = earth_project_score_runtime.score_project(request.model_dump())
+    analysis["trace_id"] = request.trace_id or str(uuid4())
+    return analysis
+
+
+@router.post("/civilization/project/score")
+async def civilization_project_score(request: Dict[str, Any] = Body(...)):
+    """
+    Score completo para decisao de capital em um projeto de infraestrutura soberana/ondas.
+    """
+    payload = dict(request or {})
+    trace_id = str(payload.get("trace_id") or uuid4())
+    normalized_name = payload.get("name") or payload.get("project_name") or "project"
+    budget_value = (
+        payload.get("budget")
+        or payload.get("capital_expenditure")
+        or payload.get("capex")
+        or 0.0
+    )
+    capex_value = payload.get("capex") or payload.get("capital_expenditure") or budget_value or 0.0
+    opex_value = payload.get("opex_yearly") or payload.get("annual_opex") or 0.0
+    revenue_value = payload.get("annual_revenue") or payload.get("revenue") or 0.0
+    discount_value = payload.get("discount_rate")
+    if discount_value is None:
+        discount_value = payload.get("discount") or 0.1
+    horizon_value = payload.get("horizon_years")
+    if horizon_value is None:
+        horizon_value = payload.get("years") or 10
+
+    analysis = civilization_investment_runtime.evaluate_project(
+        project_type=payload.get("project_type") or normalized_name,
+        capex=float(capex_value),
+        opex_yearly=float(opex_value),
+        annual_revenue=float(revenue_value),
+        project_name=normalized_name,
+        location=payload.get("location"),
+        cash_flows=payload.get("cash_flows"),
+        strategic_importance=payload.get("strategic_importance"),
+        discount_rate=float(discount_value),
+        horizon_years=int(horizon_value),
+        physical_event=payload.get("physical_event"),
+    )
+    analysis["trace_id"] = trace_id
+
+    return {
+        "trace_id": trace_id,
+        "project": {
+            "name": normalized_name,
+            "location": payload.get("location"),
+            "project_type": payload.get("project_type") or normalized_name,
+            "budget": float(budget_value),
+        },
+        "decision": analysis["decision"],
+        "flow": {
+            "trace_id": trace_id,
+            "base": {
+                "name": normalized_name,
+                "location": payload.get("location"),
+                "budget": float(budget_value),
+            },
+            "risk": analysis["risk"],
+            "cash_flow": analysis["cash_flow"],
+            "investment": analysis["capex"],
+            "metrics": {
+                "npv": analysis["npv"],
+                "irr": analysis["irr"],
+                "payback": analysis["payback"],
+                "roi": analysis["roi"],
+                "decision_score": analysis["decision_score"],
+            },
+            "financial_exposure": analysis["financial_exposure"],
+            "economic_impact": analysis["economic_impact"],
+            "impacto_estrategico": analysis["impacto_estrategico"],
+        },
+        "analysis": analysis,
+        "status": "calculated",
+        "timestamp": "2026-06-06T12:00:00Z",
+    }
 
 
 @router.post("/earth/projects/rank")
