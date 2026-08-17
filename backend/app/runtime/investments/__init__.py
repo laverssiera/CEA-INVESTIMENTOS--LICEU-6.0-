@@ -18,6 +18,7 @@ from .econotech_impact_runtime import EconotechImpactRuntime
 from .investment_network_runtime import InvestmentNetworkRuntime
 from .global_portfolio_runtime import GlobalPortfolioRuntime
 from .global_financial_exposure_runtime import GlobalFinancialExposureRuntime
+from .planetary_financial_exposure_runtime import PlanetaryFinancialExposureRuntime
 from .property_investment_runtime import PropertyInvestmentRuntime
 
 __all__ = [
@@ -39,5 +40,6 @@ __all__ = [
 	"InvestmentNetworkRuntime",
 	"GlobalPortfolioRuntime",
 	"GlobalFinancialExposureRuntime",
+	"PlanetaryFinancialExposureRuntime",
 	"PropertyInvestmentRuntime",
 ]

@@ -23,6 +23,7 @@ from app.runtime.investments.continental_capital_allocation_runtime import Conti
 from app.runtime.investments.continental_portfolio_runtime import ContinentalPortfolioRuntime
 from app.runtime.investments.continental_project_finance_runtime import ContinentalProjectFinanceRuntime
 from app.runtime.investments.continental_risk_runtime import ContinentalRiskRuntime
+from app.runtime.investments.planetary_financial_exposure_runtime import PlanetaryFinancialExposureRuntime
 
 router = APIRouter(prefix="/investments", tags=["Investments - CEA Layer"])
 
@@ -84,6 +85,7 @@ continental_risk_runtime = ContinentalRiskRuntime()
 earth_investment_runtime = EarthInvestmentRuntime()
 earth_project_score_runtime = EarthProjectScoreRuntime(earth_investment_runtime)
 earth_portfolio_runtime = EarthPortfolioRuntime(earth_project_score_runtime)
+planetary_financial_exposure_runtime = PlanetaryFinancialExposureRuntime(earth_investment_runtime)
 
 # --- Endpoints ---
 
@@ -498,3 +500,13 @@ async def continental_risk_score(request: ProjectScoreRequest):
             "budget": request.budget,
         }
     )
+
+
+@router.post("/planetary/financial-exposure")
+async def planetary_financial_exposure(request: Dict[str, Any] = Body(...)):
+    """WAVE 83 - CEA: exposicao financeira planetaria consumindo o resultado real da W82 (ECONOTECH),
+    preservando a cadeia causal ate o financial_exposure_id."""
+    payload = dict(request or {})
+    project = payload.get("project") or payload
+    w82_result = payload.get("w82_result")
+    return planetary_financial_exposure_runtime.run_wave(project, w82_result)
