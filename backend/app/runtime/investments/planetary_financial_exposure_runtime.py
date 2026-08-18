@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import uuid
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .earth_investment_runtime import EarthInvestmentRuntime
 from .econotech_impact_runtime import EconotechImpactRuntime
+
+if TYPE_CHECKING:
+    from app.services.immutable_runtime_service import ImmutableFinancialRuntime
 
 # Namespace fixo do CEA para derivacao deterministica da cadeia causal (WAVE 83).
 _CHAIN_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_URL, "cea.liceu.federation.causal-chain")
@@ -33,9 +36,42 @@ class PlanetaryFinancialExposureRuntime:
         self,
         earth_investment_runtime: EarthInvestmentRuntime | None = None,
         econotech_runtime: EconotechImpactRuntime | None = None,
+        immutable_runtime: ImmutableFinancialRuntime | None = None,
     ) -> None:
         self.earth_investment_runtime = earth_investment_runtime or EarthInvestmentRuntime()
         self.econotech_runtime = econotech_runtime or self.earth_investment_runtime.econotech_runtime
+        self.immutable_runtime = immutable_runtime
+
+    def _persist_and_recover(
+        self,
+        result: dict[str, Any],
+        immutable_runtime: ImmutableFinancialRuntime | None,
+    ) -> dict[str, Any] | None:
+        if immutable_runtime is None:
+            return None
+
+        exposure_id = result.get("financial_exposure_id")
+        if not exposure_id:
+            return None
+
+        event_type = "wave83.financial_exposure"
+        try:
+            event = immutable_runtime.find_event(event_type, "financial_exposure_id", exposure_id)
+            if event is None:
+                event = immutable_runtime.record_event(
+                    event_type,
+                    {
+                        "financial_exposure_id": exposure_id,
+                        "economic_impact_id": result["economic_impact_id"],
+                        "lineage": result["lineage"],
+                        "financial_exposure": result["financial_exposure"],
+                        "npv": result["npv"],
+                    },
+                )
+            immutable_runtime.replay()
+            return event.payload
+        except ValueError:
+            return None
 
     def build_causal_chain(self, project: dict[str, Any], w82_result: dict[str, Any] | None) -> dict[str, Any]:
         """Reconstroi/valida a cadeia causal ate o economic_impact_id (resultado real da W82)."""
@@ -182,7 +218,13 @@ class PlanetaryFinancialExposureRuntime:
             },
         }
 
-    def validate(self, project: dict[str, Any], result: dict[str, Any], replay_result: dict[str, Any]) -> dict[str, bool]:
+    def validate(
+        self,
+        project: dict[str, Any],
+        result: dict[str, Any],
+        replay_result: dict[str, Any],
+        historical_result: dict[str, Any] | None,
+    ) -> dict[str, bool]:
         chain_fields = (
             "source_event_id",
             "trace_id",
@@ -218,6 +260,11 @@ class PlanetaryFinancialExposureRuntime:
         rollback_recovery = self.rollback_and_recover(project, result["lineage"])
         rollback_valid = rollback_recovery["rollback_valid"]
         recovery_valid = rollback_recovery["recovery_valid"]
+        historical_recovery_valid = bool(
+            historical_result
+            and historical_result.get("financial_exposure_id") == result["financial_exposure_id"]
+            and historical_result.get("economic_impact_id") == result["economic_impact_id"]
+        )
 
         audit_valid = lineage_valid and exposure_valid and all(
             (
@@ -249,6 +296,7 @@ class PlanetaryFinancialExposureRuntime:
             "idempotency_valid": idempotency_valid,
             "rollback_valid": rollback_valid,
             "recovery_valid": recovery_valid,
+            "historical_recovery_valid": historical_recovery_valid,
             "audit_valid": audit_valid,
         }
 
@@ -272,9 +320,16 @@ class PlanetaryFinancialExposureRuntime:
             "recovered_financial_exposure_id": recovered["financial_exposure_id"],
         }
 
-    def run_wave(self, project: dict[str, Any], w82_result: dict[str, Any] | None = None) -> dict[str, Any]:
+    def run_wave(
+        self,
+        project: dict[str, Any],
+        w82_result: dict[str, Any] | None = None,
+        immutable_runtime: ImmutableFinancialRuntime | None = None,
+    ) -> dict[str, Any]:
         """Executa a WAVE 83 completa: evaluate -> replay -> validate -> envelope final."""
+        history_runtime = immutable_runtime or self.immutable_runtime
         result = self.evaluate(project, w82_result)
+        historical_result = self._persist_and_recover(result, history_runtime)
         # replay: reexecuta a partir da mesma cadeia causal ja resolvida (idempotencia)
         replay_result = self.evaluate(project, result["lineage"] | {
             "source_event_id": result["source_event_id"],
@@ -287,7 +342,7 @@ class PlanetaryFinancialExposureRuntime:
             "procurement_plan_id": result["procurement_plan_id"],
         })
 
-        validations = self.validate(project, result, replay_result)
+        validations = self.validate(project, result, replay_result, historical_result)
 
         if result.get("financial_exposure_id") is None or not validations["lineage_valid"]:
             status = "FAIL"

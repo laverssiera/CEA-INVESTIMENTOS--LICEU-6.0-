@@ -503,10 +503,19 @@ async def continental_risk_score(request: ProjectScoreRequest):
 
 
 @router.post("/planetary/financial-exposure")
-async def planetary_financial_exposure(request: Dict[str, Any] = Body(...)):
+async def planetary_financial_exposure(
+    request: Dict[str, Any] = Body(...),
+    db: Session = Depends(get_db),
+):
     """WAVE 83 - CEA: exposicao financeira planetaria consumindo o resultado real da W82 (ECONOTECH),
     preservando a cadeia causal ate o financial_exposure_id."""
     payload = dict(request or {})
     project = payload.get("project") or payload
     w82_result = payload.get("w82_result")
-    return planetary_financial_exposure_runtime.run_wave(project, w82_result)
+    from app.services.immutable_runtime_service import ImmutableFinancialRuntime
+
+    return planetary_financial_exposure_runtime.run_wave(
+        project,
+        w82_result,
+        immutable_runtime=ImmutableFinancialRuntime(db),
+    )

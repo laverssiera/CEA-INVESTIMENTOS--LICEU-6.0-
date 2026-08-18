@@ -22,7 +22,7 @@ class ImmutableFinancialRuntime:
             payload=payload,
             previous_hash=prev_hash,
             sequence=sequence,
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc).replace(tzinfo=None),
         )
         new_event.current_hash = new_event.calculate_hash()
         
@@ -38,6 +38,11 @@ class ImmutableFinancialRuntime:
         })
         
         return new_event
+
+    def find_event(self, event_type: str, field: str, value: str):
+        """Recupera um evento persistido pelo campo identificado do payload."""
+        events = self.db.query(ImmutableEvent).filter(ImmutableEvent.event_type == event_type).all()
+        return next((event for event in events if event.payload.get(field) == value), None)
 
     def replay(self, start_sequence: int = 0, end_sequence: int = None):
         """Replays events to reconstruct state"""
