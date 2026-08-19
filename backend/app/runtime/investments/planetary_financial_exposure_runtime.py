@@ -265,6 +265,7 @@ class PlanetaryFinancialExposureRuntime:
             and historical_result.get("financial_exposure_id") == result["financial_exposure_id"]
             and historical_result.get("economic_impact_id") == result["economic_impact_id"]
         )
+        persistence_verified = historical_recovery_valid
 
         audit_valid = lineage_valid and exposure_valid and all(
             (
@@ -297,6 +298,7 @@ class PlanetaryFinancialExposureRuntime:
             "rollback_valid": rollback_valid,
             "recovery_valid": recovery_valid,
             "historical_recovery_valid": historical_recovery_valid,
+            "persistence_verified": persistence_verified,
             "audit_valid": audit_valid,
         }
 
