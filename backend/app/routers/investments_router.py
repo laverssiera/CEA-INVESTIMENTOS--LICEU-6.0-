@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from app.events import event_bus
 from app.db.session import get_db
+from app.db.session import SessionLocal
 from app.runtime.investments.risk_scoring_runtime import RiskScoringRuntime
 from app.runtime.investments.portfolio_runtime import PortfolioRuntime
 from app.runtime.investments.infrastructure_fund_runtime import InfrastructureFundRuntime
@@ -24,6 +25,7 @@ from app.runtime.investments.continental_portfolio_runtime import ContinentalPor
 from app.runtime.investments.continental_project_finance_runtime import ContinentalProjectFinanceRuntime
 from app.runtime.investments.continental_risk_runtime import ContinentalRiskRuntime
 from app.runtime.investments.planetary_financial_exposure_runtime import PlanetaryFinancialExposureRuntime
+from app.runtime.investments.continental_financial_exposure_runtime import ContinentalFinancialExposureRuntime
 
 router = APIRouter(prefix="/investments", tags=["Investments - CEA Layer"])
 
@@ -518,4 +520,15 @@ async def planetary_financial_exposure(
         project,
         w82_result,
         immutable_runtime=ImmutableFinancialRuntime(db),
+    )
+
+
+@router.post("/continental/financial-exposure")
+async def continental_financial_exposure(
+    request: Dict[str, Any] = Body(...),
+    db: Session = Depends(get_db),
+):
+    """WAVE 92: lê W89-W91 do Event Store canônico e grava exposição continental."""
+    return ContinentalFinancialExposureRuntime(db, SessionLocal).run_wave(
+        dict(request or {})
     )
