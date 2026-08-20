@@ -4,7 +4,9 @@ import uuid
 from typing import Any, Callable
 
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
+from app.db.session import database_config
 from app.models.immutable_runtime import ImmutableEvent
 from app.runtime.investments.earth_investment_runtime import EarthInvestmentRuntime
 from app.runtime.investments.planetary_financial_exposure_runtime import PlanetaryFinancialExposureRuntime
@@ -135,6 +137,11 @@ class ContinentalFinancialExposureRuntime:
             "wave": 92,
             "scope": "continental",
             "origin": "CEA",
+            "database_connection_valid": False,
+            "effective_database_host": database_config.host,
+            "effective_database_name": database_config.database,
+            "effective_schema": database_config.schema,
+            "connection_source": database_config.source,
             **supplied,
             "financial_exposure_id": None,
             "contract_valid": False,
@@ -162,6 +169,7 @@ class ContinentalFinancialExposureRuntime:
         }
         try:
             chain, events = self._recover_chain(supplied)
+            base["database_connection_valid"] = True
             project = self._project_from_events(events)
             result = PlanetaryFinancialExposureRuntime(
                 earth_investment_runtime=self.investment_runtime,
@@ -221,6 +229,6 @@ class ContinentalFinancialExposureRuntime:
                 "rollback_valid", "recovery_valid", "audit_valid",
             )
             base["status"] = "PASS" if all(base[key] for key in gates) else "BLOCKED"
-        except (LookupError, ValueError, KeyError, TypeError) as error:
+        except (LookupError, ValueError, KeyError, TypeError, SQLAlchemyError) as error:
             base["error"] = str(error)
         return base
